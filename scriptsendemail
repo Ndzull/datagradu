@@ -1,0 +1,112 @@
+function generateEmails() {
+  var smtpServer = "smtp.gmail.com";
+  var smtpPort = 465;
+  var username = "workergithub@gmail.com";
+  var password = "browncoffee";
+
+  // var spreadsheet = SpreadsheetApp.openById("1-GjfOVG45WDkX0UJmS5bZXgl-k_LNkBh88WGk4YdO1I"); // dummy data 
+  // var spreadsheet = SpreadsheetApp.openById("1jCTbNv1c2KMGqtZ3xQDnXe0CIlbpPpSbe2fOLp6LN3c"); // real data
+  var spreadsheet = SpreadsheetApp.openById("1TeFYNutB1IQdwtcmPEVs85nqwdNP7-KIC-aEXkK5tgU"); // kesalahan data
+  var cnt = 0;
+
+// 99 + 99 + 99 + 36 + 93 = 426
+// A2 nama || B2 email || C2 link qr_code github
+
+  // 5 || 36 data (akun kelima)
+  var sheetLima = spreadsheet.getSheetByName("Sheet1");
+  var dataLima = sheetLima.getRange('A1:C1').getValues(); 
+  for (var t = 0; t < dataLima.length; t++) {
+    sendEmail(dataLima[t]); 
+  }
+
+  function sendEmail(rowData) {
+    var name = rowData[0]; // kolom a
+    var email = rowData[1]; // kolom b
+    var qr_code = rowData[2]; // kolom c
+
+    // Debugging
+    console.log("Nama:", name);
+    console.log("Email:", email);
+    console.log("QR Code:", qr_code);
+    cnt++;
+    console.log("Total email kekirim:", cnt);
+    // Utilities.sleep(5000);
+
+        var message = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>SMANSA GRADUATION 2023/2024</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f5f5f5;
+                  padding: 20px;
+                  text-align: center;
+              }
+
+              .container {
+                  max-width: 600px;
+                  margin: 0 auto;
+                  background-color: #fff;
+                  padding: 20px;
+                  border-radius: 10px;
+                  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+              }
+
+              h1, h3 {
+                  color: #333;
+              }
+
+              img {
+                  max-width: 100%;
+                  height: auto;
+                  margin-bottom: 20px;
+              }
+
+              .qr-code {
+                  margin-top: 20px;
+              }
+
+              .copyright {
+                  color: blue;
+              }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <h1>dingdong --&#x1F514;</h1> 
+              <h1>You are invited to the SMANSA's graduation ceremony, class of 2024. &#x1F393;&#x1F389;&#x1F388;</h1>
+              <img src="https://github.com/Ndzull/datagradu/blob/main/Undangan/0.png?raw=true" alt="Image 1">
+              <img src="https://github.com/Ndzull/datagradu/blob/main/Undangan/1.png?raw=true" alt="Image 2">
+              <h3>Please scan the QR code below to enter the room, thank you.</h3>
+              <h3>Best Regards,</h3>
+              <h3>MPK/OSIS SMA Negeri 1 Cirebon.</h3>
+              <a href="https://instagram.com/iclub.81" target="_blank">Made possible with IC81 magic</a></p>
+          </div>
+      </body>
+      </html>
+    `;
+
+    var subject = "Hello, " + name + " !"; // header email
+
+    try {
+      GmailApp.sendEmail(email, subject, message, {
+        name: "XAVIERUS SMANSA GRADUATION 2023/2024", // paling atas (from)
+        htmlBody: message,
+        attachments: [UrlFetchApp.fetch(qr_code).getBlob()],
+        smtpServer: smtpServer,
+        port: smtpPort,
+        userName: username,
+        password: password,
+        useSsl: true
+      });
+      Logger.log("don kak " + email);
+      // Utilities.sleep(5000);
+    } catch (e) {
+      Logger.log("error" + email + ": " + e);
+    }
+  }
+}
